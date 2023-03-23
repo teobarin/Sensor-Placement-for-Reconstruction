@@ -3,7 +3,7 @@ This project was realized for the Computational Statistics course, held at Polit
 
 Project supervisors: Andrea Manzoni, Stefania Fresca.
 
-Author: Matteo Barin ([GitHub](https://github.com/teobarin), [Linkedin](www.linkedin.com/in/matteo-barin))
+Author: Matteo Barin ([GitHub](https://github.com/teobarin), [Linkedin](https://www.linkedin.com/in/matteo-barin))
 
 ## Description
 
