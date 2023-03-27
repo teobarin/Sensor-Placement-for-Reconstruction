@@ -56,11 +56,37 @@ for r = [50 100 r_opt 300]
     
     %% Random reconstruction with r sensors
     
-    sensors = randperm(m,r);
+   % sensors = randperm(m,r);
     %sensors =round(m/2+180*randn(1,166));
+    Z=[];
+    c=0;
+    while size(Z,2)<r
+        Y = exprnd(1);
+        U_tilde = rand(1);
+        if U_tilde <= exp(-(Y-1)^2)/2
+            U=rand(1);
+            if U<=1/2
+                Z=[Z,-Y];
+            else
+                Z=[Z,Y];
+            end
+        end
+        c=c+1;
+    end
+    sensors = unique(round(m/2+r*Z));
+    %sensors = [1:32*3,32*5+1:1024];
+    %sensors = (1+32*k:32*(k+2)); 
+    %sensors = 501;
+    mask = zeros(size(x));
+    mask(sensors)  = x(sensors)+meanface(sensors);figure
+    print_face(mask,[figpath,'FIG_10_rand_mask_',num2str(r)]);
     
-
-
+    xls = Psi(:,1:r)*(Psi(sensors,1:r)\x(sensors));figure
+    print_face(xls+meanface,[figpath,'FIG_10_rand_',num2str(r)]);
+    
+    zrand = zeros(size(x));zrand(sensors) = 1;
+    [zloc,~] = sens_sel_locr(Psi(:,1:r),r,zrand);
+    sensors = find(zloc>.1);
 
     mask = zeros(size(x));
     mask(sensors)  = x(sensors)+meanface(sensors);figure
@@ -73,8 +99,18 @@ for r = [50 100 r_opt 300]
     %% QDEIM with r QR sensors
     
     [~,~,pivot] = qr(Psi(:,1:r)','vector');
-    sensors = pivot(1:r);
+    sensors1 = pivot(1:r);
+    zqr = zeros(size(pivot))';zqr(sensors1) = 1;
+    [zloc,~] = sens_sel_locr(Psi(:,1:r),r,zqr);
+    sensors = find(zloc>.1);
     
+    mask1 = zeros(size(x));
+    mask1(sensors1)  = x(sensors1)+meanface(sensors1);figure
+    print_face(mask1,[figpath,'FIG_10_qr_mask_',num2str(r)]);
+    
+    xls1 = Psi(:,1:r)*(Psi(sensors1,1:r)\x(sensors1));figure
+    print_face(xls1+meanface,[figpath,'FIG_10_qr_',num2str(r)]);
+
     mask = zeros(size(x));
     mask(sensors)  = x(sensors)+meanface(sensors);figure
     print_face(mask,[figpath,'FIG_10_qr_mask_',num2str(r)]);
@@ -82,4 +118,17 @@ for r = [50 100 r_opt 300]
     xls = Psi(:,1:r)*(Psi(sensors,1:r)\x(sensors));figure
     print_face(xls+meanface,[figpath,'FIG_10_qr_',num2str(r)]);
     
+    %% Convex opt
+    zhat = sens_sel_approxnt(Psi(:,1:r),r);
+    [zloc,~] = sens_sel_locr(Psi(:,1:r),r,zhat);
+    sensors = find(zloc>.1);
+
+    mask = zeros(size(x));
+    mask(sensors)  = x(sensors)+meanface(sensors);figure
+    print_face(mask,[figpath,'FIG_10_qr_mask_',num2str(r)]);
+    
+    xls = Psi(:,1:r)*(Psi(sensors,1:r)\x(sensors));figure
+    print_face(xls+meanface,[figpath,'FIG_10_qr_',num2str(r)]);
+
+    %%
 end

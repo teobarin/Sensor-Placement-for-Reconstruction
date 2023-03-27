@@ -1,5 +1,5 @@
 % facial reconstruction template
-clear; close all; clc
+%clear; close all; clc
 
 datpath = '../DATA/';
 figpath = '../figures/';
@@ -34,8 +34,11 @@ Iord = 1:size(X,2);
 testIdx = Iord(~ismember(Iord,trainIdx));
 
 meanface = mean(X,2);
-X = X-repmat(meanface,1,size(X,2)); % mean centered data
-
+X = X-repmat(meanface,1,size(X,2)); % mean centered data 
+imma = X(:,round(linspace(1,2414,10)));
+imma = reshape(imma,32,10*32); figure
+imagesc(imma), axis image,  colormap(gray), axis off
+brighten(0.6)
 % proper orthogonal decomposition
 [Psi,S,V] = svd(X,'econ');
 eigenfaces = Psi(:,1:10);
@@ -47,13 +50,15 @@ for i=1:10
     imgtrain(:,i) = imgtrain(:,i)/maxval;
 end
 imgtrain = reshape(imgtrain,32,10*32);
+figure
 imagesc(imgtrain), axis image,  colormap(gray), axis off
-brighten(0.5)
+brighten(0.7)
 %printFormattedEPS(gca,gcf,[figpath,'yale_train.eps'],get(gcf,'Position'));
 
 for i=1:10
     eigenfaces(:,i) = eigenfaces(:,i)/max(abs(eigenfaces(:,i)));
 end
+figure
 imagesc(reshape(eigenfaces,32,10*32)), axis image,  colormap(gray), axis off
 %brighten(0.5)
 %printFormattedEPS(gca,gcf,[figpath,'eigenface.eps'],get(gcf,'Position'));
